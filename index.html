@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="./css/style.css">
+  <title>Cadastro de Clientes</title>
+</head>
+<body>
+
+  <div class="container">
+    <dir class="header">
+      <span class="material-symbols-outlined header-icon">
+        person
+      </span>
+      <h1>Cadastro de Usuários</h1>
+    </dir>
+    <form data-js="userForm" class="form-control">
+      <div class="form-group">
+        <label for="name">*Nome</label>
+        <input type="text" name="name" required placeholder="Insira o nome">
+      </div>
+      <div class="form-group">
+        <label for="email'">*E-mail</label>
+        <input type="email" name="email" required placeholder="Insira o e-mail">
+      </div>
+      <input data-js="userId" type="hidden" value="" name="id">
+      <button>
+        <span class="material-symbols-outlined header-icon">
+          add_circle
+        </span>
+      </button>
+  </form>
+  <span data-js="message" class="message">Testando</span>
+  <table class="user-table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Opções</th>
+      </tr>
+    </thead>
+    <tbody data-js="userTable"></tbody>
+  </table>
+  </div>
+
+  <div data-js="modal" class="modal">
+    <span data-js="closeModal" class="close" title="Fechar">&times;</span>
+    <form class="modal-content">
+      <div class="modal-container">
+        <h1>Deletar Usuário</h1>
+        <p>Você reamente quer deletar está conta?</p>
+  
+        <div class="clearfix">
+          <button data-js="cancelBtn" type="button" class="modal-button cancelbtn">Cancel</button>
+          <button data-js="deleteBtn" type="button" class="modal-button deletebtn">Delete</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

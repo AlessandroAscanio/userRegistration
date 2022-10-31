@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;500&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #FBFBFB;
+  color: #323232;
+  font-family: 'Poppins', sans-serif;
+}
+
+.container {
+  margin: 0 20%;
+}
+
+h1 {
+  font-size: 48px;
+  color: #204BCF;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  gap: 20px;
+}
+
+.form-control {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  margin-top: 50px;
+}
+
+.form-control input {
+  height: 40px;
+  border-radius: 4px;
+  border: 2px solid #D8D8D8;
+  padding: 5px;
+  width: 100%;
+  outline: none;
+}
+
+.form-control input:hover,
+.form-control input:focus {
+  border: 2px solid #204BCF;
+}
+
+.form-control button {
+ border: none;
+ background-color: rgba(0,0,0,0);
+ cursor: pointer;
+ margin-top: 12px
+}
+
+.form-control .form-group {
+  width: 1000%;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48
+}
+
+.header-icon {
+  font-size: 60px;
+  color: #204BCF;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 50px;
+}
+
+.user-table th {
+  text-align: left;
+  font-weight: bold;
+}
+
+.user-table tr {
+  height: 60px;
+  border-top: 2px solid #d8d8d8;
+}
+
+.user-table tr:nth-child(2n) {
+  background-color: #F6f6f6;
+}
+
+.user-table button {
+  border: none;
+  background-color: rgba(0,0,0,0);
+  cursor: pointer;
+}
+
+.message {
+  display: flex;
+  justify-content: center;
+  padding: 15px;
+}
+
+.success {
+  background-color: green;
+  color: #fff;
+  height: 100px;
+  
+}
+
+.error {
+  background-color: red;
+  color: white;
+}
+.warning {
+  background-color: rgb(252, 252, 85);
+}
+
+/* Set a style for all buttons */
+.modal-button  {
+  background-color: #04AA6D;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+.modal-button:hover {
+  opacity:1;
+}
+
+/* Float cancel and delete buttons and add an equal width */
+.cancelbtn, .deletebtn {
+  float: left;
+  width: 50%;
+}
+
+/* Add a color to the cancel button */
+.cancelbtn {
+  background-color: #ccc;
+  color: black;
+}
+
+/* Add a color to the delete button */
+.deletebtn {
+  background-color: #f44336;
+}
+
+/* Add padding and center-align text to the container */
+.modal-container {
+  padding: 16px;
+  text-align: center;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: #474e5d;
+  padding-top: 50px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+/* The Modal Close Button (x) */
+.close {
+  position: absolute;
+  right: 35px;
+  top: 15px;
+  font-size: 40px;
+  font-weight: bold;
+  color: #f1f1f1;
+}
+
+.close:hover,
+.close:focus {
+  color: #f44336;
+  cursor: pointer;
+}
+
+/* Clear floats */
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Change styles for cancel button and delete button on extra small screens */
+@media screen and (max-width: 300px) {
+  .cancelbtn, .deletebtn {
+    width: 100%;
+  }
+}
