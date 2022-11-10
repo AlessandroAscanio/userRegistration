@@ -55,7 +55,7 @@ onSnapshot(userList, querySnapshot => {
             <span data-remove="${doc.id}" class="material-symbols-outlined delete-icon">
               delete
             </span>
-          </button>
+          </button> 
         </td>
       </tr>`
       
@@ -75,9 +75,9 @@ onSnapshot(userList, querySnapshot => {
 userForm.addEventListener('submit', e => {
   e.preventDefault()
   
-  const userName = e.target.name.value.trim()
-  const userEmail = e.target.email.value.trim()
-  const userId = e.target.id.value  
+  const userName = DOMPurify.sanitize(e.target.name.value.trim())
+  const userEmail = DOMPurify.sanitize(e.target.email.value.trim())
+  const userId = DOMPurify.sanitize(e.target.id.value)  
 
   if(userName ==='' && userEmail === '') {
     return
@@ -135,8 +135,8 @@ userTable.addEventListener('click', e => {
     
     userIdContainer.value = idEditButton
     updateIcon.textContent = 'change_circle'
-    inputName.value = name
-    inputEmail.value = email
+    inputName.value = DOMPurify.sanitize(name)
+    inputEmail.value = DOMPurify.sanitize(email)
   }
 })
 
