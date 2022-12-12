@@ -15,141 +15,155 @@ const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 const collectionUsers = collection(db, 'users')
 const userList = query(collectionUsers, orderBy('createdAt', 'desc'))
-
 const userTable = document.querySelector('[data-js="userTable"]')
 const userForm = document.querySelector('[data-js="userForm"]')
-const message = document.querySelector('[data-js="message"]')
-const modal = document.querySelector('[data-js="modal"]')
-const cancelBtn = document.querySelector('[data-js="cancelBtn"]')
-const deleteBtn = document.querySelector('[data-js="deleteBtn"]')
-const closeModal = document.querySelector('[data-js="closeModal"]')
-const updateIcon = userForm.children[3].children[0]
+const updateIcon = userForm.children[0].children[2].children[1].children[0]
 const userIdContainer = document.querySelector('[data-js="userId"]')
+const documentFragment = document.createDocumentFragment()
 
-const logMessage = (className, text) => {
-  message.classList.add(className)
-  message.textContent = text
+const renderUser = doc => {
+  const [id, { name, email }] = [doc.id, doc.data()]
+    const tr = document.createElement('tr')
+    const tdName = document.createElement('td')
+    const tdEmail = document.createElement('td')
+    const tdButtons = document.createElement('td')
+    const editButton = document.createElement('button')
+    const editSpan = document.createElement('span')
+    const deleteButton = document.createElement('button')
+    const deleteSpan = document.createElement('span')
+
+    tr.setAttribute('data-id', `${id}`)
+    
+    tdName.textContent = DOMPurify.sanitize(name)
+    tdEmail.textContent = DOMPurify.sanitize(email)
+
+    editSpan.setAttribute('data-edit', `${id}`)
+    editSpan.classList.add('material-symbols-outlined', 'edit-icon')
+    editSpan.textContent = 'edit_square'
+
+    deleteButton.setAttribute('type', 'button')
+    deleteButton.setAttribute('data-bs-toggle', 'modal')
+    deleteButton.setAttribute('data-bs-target', '#deleteUser')
+
+    deleteSpan.setAttribute('data-remove', `${id}`)
+    deleteSpan.classList.add('material-symbols-outlined', 'delete-icon')
+    deleteSpan.textContent = 'delete'
+
+    tdButtons.classList.add('text-center')
+
+    editButton.classList.add('btn', 'shadow-none')
+    deleteButton.classList.add('btn', 'shadow-none')
+
+    editButton.append(editSpan)
+    deleteButton.append(deleteSpan)
+    tdButtons.append(editButton, deleteButton)
+    tr.append(tdName, tdEmail, tdButtons)
+
+    documentFragment.append(tr)
 }
 
-const removeMessage = className => {
-  message.classList.remove(className)
-  message.textContent = ''
-}
-
-onSnapshot(userList, querySnapshot => {
-  if(!querySnapshot.metadata.hasPendingWrites) {
-    const usersTrs = querySnapshot.docs.reduce((acc, doc) => {
-      const { name, email } = doc.data()
-      
-      acc +=`
-      <tr data-id="${doc.id}">
-        <td>${name}</td>
-        <td>${email}</td>
-        <td>
-          <button>
-            <span data-edit="${doc.id}" class="material-symbols-outlined edit-icon ">
-              edit_square
-            </span>
-          </button>
-          <button>
-            <span data-remove="${doc.id}" class="material-symbols-outlined delete-icon">
-              delete
-            </span>
-          </button> 
-        </td>
-      </tr>`
-      
-      return acc
-    },'')
-
-    if(!usersTrs.length){
-      logMessage('warning', 'Não há usuários a serem exibidos')
-    } else {
-      removeMessage('warning') 
-    }
-  
-    userTable.innerHTML = usersTrs
+const renderUserList = snapshot => {
+  if(snapshot.metadata.hasPendingWrites) {
+    return
   }
-})
+  
+  userTable.innerHTML = ''
+  snapshot.docs.forEach(doc => renderUser(doc))
+  userTable.append(documentFragment)
+}
 
-userForm.addEventListener('submit', e => {
+const createUser = ( userName, userEmail ) => {
+  addDoc(collectionUsers, {
+    name: userName,
+    email: userEmail,
+    createdAt: serverTimestamp()
+  })
+  .then()
+  .catch(console.log)  
+}
+
+const editUser = (userName, userEmail, userId) => {
+  const editUser = doc(db, 'users', userId)
+  updateDoc(editUser, {
+    name: userName,
+    email: userEmail,
+    createdAt: serverTimestamp()
+  })
+  .then(() => {
+    userIdContainer.value = ''
+  })
+  .catch(console.log)
+}
+
+const handleUser = e => {
   e.preventDefault()
   
   const userName = DOMPurify.sanitize(e.target.name.value.trim())
   const userEmail = DOMPurify.sanitize(e.target.email.value.trim())
   const userId = DOMPurify.sanitize(e.target.id.value)  
+  const IsNotUserFieldsFilled = userName ==='' && userEmail === ''
+  const IsNotUserExists = !userId.length
 
-  if(userName ==='' && userEmail === '') {
+  if(IsNotUserFieldsFilled) {
     return
   }
 
-  if(!userId.length) {
-    addDoc(collectionUsers, {
-      name: userName,
-      email: userEmail,
-      createdAt: serverTimestamp()
-    })
-    .then()
-    .catch(console.log)  
+  if(IsNotUserExists) {
+    createUser(userName, userEmail)
+      
+    userForm.reset()
+    e.target.name.focus()
+    return
   }
 
-  if(userId.length) {
-    const editUser = doc(db, 'users', userId)
-  
-    updateDoc(editUser, {
-      name: userName,
-      email: userEmail,
-      createdAt: serverTimestamp()
-    })
-    .then(() => {
-      userIdContainer.value = ''
-    })
-    .catch(console.log) 
-  }
-  
+  editUser(userName, userEmail, userId)
+
   userForm.reset()
   e.target.name.focus()
   updateIcon.textContent = 'add_circle'
-})
+}
 
-userTable.addEventListener('click', e => {
-  const idRemoveButton = e.target.dataset.remove
-  const idEditButton = e.target.dataset.edit
+const hideModal = new bootstrap.Modal(document.querySelector('#deleteUser'))
 
-  if(idRemoveButton) {  
-    modal.style.display='block'
-    
-    deleteBtn.addEventListener('click', () => {
-      deleteDoc(doc(db, 'users', idRemoveButton))
-        .then(() =>  modal.style.display='none')
-        .catch(console.log)
-    })
+const deleteUser = (id) => {
+  const deleteBtn = document.querySelector('[data-js="deleteBtn"]')
+
+  deleteBtn.addEventListener('click', () => {
+    deleteDoc(doc(db, 'users', id))
+      .then(() => hideModal.hide())
+      .catch(console.log)
+  })
+}
+
+const fillFormFields = (editID) => {
+  const tr = document.querySelector(`[data-id="${editID}"]`)
+  const name = tr.children[0].textContent 
+  const email = tr.children[1].textContent
+  const inputName = userForm.children[0].children[0].children[1]
+  const inputEmail = userForm.children[0].children[1].children[1]
+
+  userIdContainer.value = editID
+  updateIcon.textContent = 'change_circle'
+  inputName.value = DOMPurify.sanitize(name)
+  inputEmail.value = DOMPurify.sanitize(email)
+}
+
+const handleEditOrDeleteUserOptions = e => {
+  const removeId = e.target.dataset.remove
+  const editID = e.target.dataset.edit
+  const clickedRemoveButton = removeId
+  const clickedEditButton = editID
+  
+  if(clickedRemoveButton) {
+    deleteUser(removeId)
+    return
   }
 
-  if(idEditButton) {
-    const tr = document.querySelector(`[data-id="${idEditButton}"]`)
-    const name = tr.children[0].textContent 
-    const email = tr.children[1].textContent
-    const inputName = userForm.children[0].childNodes[3]
-    const inputEmail = userForm.children[1].childNodes[3]
-    
-    userIdContainer.value = idEditButton
-    updateIcon.textContent = 'change_circle'
-    inputName.value = DOMPurify.sanitize(name)
-    inputEmail.value = DOMPurify.sanitize(email)
-  }
-})
-
-cancelBtn.addEventListener('click', () => {
-  modal.style.display='none'
-})
-
-closeModal.addEventListener('click', () => {
-  modal.style.display='none'
-})
-
-window.onclick = e => {
-  if(e.target == modal) {
-    modal.style.display='none'
+  if(clickedEditButton) {
+    fillFormFields(editID)
   }
 }
+
+onSnapshot(userList, renderUserList)
+userForm.addEventListener('submit', handleUser)
+userTable.addEventListener('click', handleEditOrDeleteUserOptions)
